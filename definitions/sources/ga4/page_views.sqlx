@@ -1,0 +1,15 @@
+config {
+ type: "table",
+ schema: "dataform_sources",
+}
+
+SELECT
+  event_timestamp,
+  user_pseudo_id,
+  ${helpers.getEventParam('page_location')},
+  ${helpers.getEventParam('page_referrer')},
+  ${helpers.getEventParam('ga_session_id','int')},
+FROM
+    ${ref(constants.GA4_TABLE)}
+WHERE
+  event_name = 'page_view'
