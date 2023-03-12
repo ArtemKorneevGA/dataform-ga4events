@@ -1,0 +1,21 @@
+config { 
+  type: "assertion",
+}
+
+js {
+    const MAX_DELAY = 751;
+}
+
+
+WITH max_date AS (
+SELECT
+    DATE_DIFF(CURRENT_DATE(), MAX(dt), DAY) as diff
+FROM
+    ${ref("page_view")}
+)
+
+SELECT
+  diff
+FROM
+  max_date 
+where diff > ${MAX_DELAY}

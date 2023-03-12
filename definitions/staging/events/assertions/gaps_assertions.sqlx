@@ -1,0 +1,35 @@
+config { 
+  type: "assertion",
+  }
+
+js {
+    const START_DATE = '2022-05-01';
+    const END_DATE = '2022-05-01';
+}
+
+WITH dates AS (
+    SELECT
+        dt
+    FROM
+    UNNEST( GENERATE_DATE_ARRAY('${START_DATE}','${END_DATE}', INTERVAL 1 day) ) AS dt 
+),
+events AS (
+    SELECT
+        dt,
+        count(event_id) AS pvs
+    FROM
+        ${ref("page_view")}
+    GROUP BY
+    1 
+)
+SELECT
+  d.dt,
+  e.pvs
+FROM
+  dates d
+LEFT JOIN
+  events e
+ON
+  e.dt = d.dt
+WHERE
+  e.pvs = 0

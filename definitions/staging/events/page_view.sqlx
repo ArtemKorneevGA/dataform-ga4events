@@ -8,6 +8,6 @@ config {
 }
 
 select
-    * except (is_valid)
-from ${ref("purchase_tmp")} p
+  * except (is_valid)
+from ${ref("page_view_tmp")} p
 where is_valid is true

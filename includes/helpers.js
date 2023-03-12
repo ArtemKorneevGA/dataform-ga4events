@@ -21,6 +21,15 @@ const getEventParam = (eventParamName, eventParamType = "string", columnName = f
   }`;
 };
 
+const getDateFromTableName = (tblName) =>{
+  return tblName.substring(7);
+}
+const getDatsetFromTableName = (tblName) =>{
+  return tblName.substring(1,tblName.lastIndexOf('.'))
+
+}
 module.exports = {
   getEventParam,
+  getDatsetFromTableName,
+  getDateFromTableName
 };

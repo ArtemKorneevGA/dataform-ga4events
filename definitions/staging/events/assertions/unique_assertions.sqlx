@@ -1,0 +1,9 @@
+config { 
+    type: "assertion", 
+}
+
+select
+    event_id
+from ${ref("page_view")}  
+group by 1 
+having count(1) > 1

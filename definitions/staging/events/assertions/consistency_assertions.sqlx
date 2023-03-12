@@ -1,0 +1,24 @@
+config { 
+  type: "assertion",
+}
+
+WITH purchases as (
+  select
+    event_id,
+    session_id,
+    ts as purchase_ts,    
+  from ${ref("purchase")}
+),
+page_views as (
+  select
+    session_id,
+    min(ts) as first_pv_ts,    
+  from ${ref("page_view")}
+  group by 1
+)
+
+select
+  event_id
+from purchases
+left join page_views using (session_id)
+where first_pv_ts is null or purchase_ts < first_pv_ts
