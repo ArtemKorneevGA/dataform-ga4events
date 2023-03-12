@@ -9,3 +9,9 @@ declare({
   schema: constants.GA4_DATASET,
   name: 'events_*',
 });
+
+declare({
+  database: constants.GA4_DATABASE,
+  schema: constants.GA4_DATASET,
+  name: 'events_intraday_*',
+});
