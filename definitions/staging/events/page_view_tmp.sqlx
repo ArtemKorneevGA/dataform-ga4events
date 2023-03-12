@@ -3,6 +3,16 @@ config {
    schema: "dataform_staging",
 }
 
+pre_operations {
+   DECLARE is_event_table DEFAULT (
+      SELECT
+         ANY_VALUE(table_type)
+      FROM `${helpers.getDatsetFromTableName(self())}.INFORMATION_SCHEMA.TABLES`
+      WHERE table_name = '${name()}'
+   );
+}
+
+
 with event_table as (
    SELECT
       FARM_FINGERPRINT(CONCAT(event_timestamp, event_name, user_pseudo_id)) as event_id,
@@ -14,9 +24,12 @@ with event_table as (
       ${helpers.getEventParam('page_referrer')},
       ${helpers.getEventParam('page_title')},
    FROM
-      ${ref(constants.GA4_TABLE)}
+      ${ref('events_*')}
    WHERE
    event_name = 'page_view'
+   and REGEXP_CONTAINS(_TABLE_SUFFIX, if(is_event_table is null, r'.*', '${helpers.getDateFromTableName(constants.GA4_TABLE)}'))
+   and contains_substr(_TABLE_SUFFIX, 'intraday') is not true
+
 )
 
 select
