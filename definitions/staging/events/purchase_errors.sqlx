@@ -10,4 +10,4 @@ config {
 select
     * except (is_valid)
 from ${ref("purchase_tmp")} p
-where is_valid is true
+where is_valid is not true

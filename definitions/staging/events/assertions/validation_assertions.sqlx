@@ -1,0 +1,11 @@
+config { 
+    type: "assertion", 
+}
+
+select
+   event_id
+from ${ref("page_view")} 
+where
+   event_id is null
+   or page_location is null
+   or page_location = '(not set)'

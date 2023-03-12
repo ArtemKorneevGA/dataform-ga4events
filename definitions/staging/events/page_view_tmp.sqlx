@@ -1,0 +1,25 @@
+config {
+   type: "table",
+   schema: "dataform_staging",
+}
+
+with event_table as (
+   SELECT
+      FARM_FINGERPRINT(CONCAT(event_timestamp, event_name, user_pseudo_id)) as event_id,
+      TIMESTAMP_MICROS(event_timestamp) as ts,
+      DATE(TIMESTAMP_MICROS(event_timestamp)) as dt,
+      CONCAT((SELECT ep.value.int_value AS ga_session_id FROM UNNEST(event_params) ep WHERE ep.key = 'ga_session_id'), user_pseudo_id) as session_id,
+      device.category as device_category,
+      ${helpers.getEventParam('page_location')},
+      ${helpers.getEventParam('page_referrer')},
+      ${helpers.getEventParam('page_title')},
+   FROM
+      ${ref(constants.GA4_TABLE)}
+   WHERE
+   event_name = 'page_view'
+)
+
+select
+   *,
+   ${validation_helpers.getIsValidSql("page_view")} as is_valid
+from event_table

@@ -1,11 +1,9 @@
 config {
-  type: "incremental",
-  uniqueKey:['dt','event_id'],
+  type: "table",
   schema: "dataform_staging",
-  bigquery: {
-    partitionBy: "dt",
-  }
 }
+
+with event_table as (
 SELECT
   FARM_FINGERPRINT(CONCAT(event_timestamp, event_name, user_pseudo_id)) as event_id,
   TIMESTAMP_MICROS(event_timestamp) as ts,
@@ -14,10 +12,15 @@ SELECT
   device.category as device_category,
   ${helpers.getEventParam('page_location')},
   ${helpers.getEventParam('page_referrer')},
-  ${helpers.getEventParam('page_title')},
+  ${helpers.getEventParam('currency')},
+  ${helpers.getEventParam('coupon')},
 FROM
-  ${ when(incremental(), `${ref(constants.GA4_TABLE)}`) }
-  ${ when(!incremental(), `${ref('events_*')}`) }
+     ${ref(constants.GA4_TABLE)}
 WHERE
-  event_name = 'page_view'
-  ${ when(!incremental(), "and contains_substr(_TABLE_SUFFIX, 'intraday') is not true") }
+  event_name = 'purchase'
+)
+
+select
+  *,
+  ${validation_helpers.getIsValidSql("purchase")} as is_valid
+from event_table
