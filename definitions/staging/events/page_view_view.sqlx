@@ -1,8 +1,0 @@
-config {
-   type: "view",
-   schema: "dataform_staging",
-}
-
-select *, 'daily' as  event_type from ${ref("page_view")}
-union all
-select *, 'intraday' as  event_type from ${ref("page_view_intraday")}
