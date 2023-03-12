@@ -9,7 +9,7 @@ const getIsValidSql = (event_name) => {
                 or NET.HOST(page_location) not in ('googlemerchandisestore.com', 'www.googlemerchandisestore.com','shop.googlemerchandisestore.com')
                 ,false,true)`;
         case "purchase": 
-            return `if(currency is not null,false,true)`;
+            return `if(currency is null, false, true)`;
     }
 }
 
