@@ -21,6 +21,14 @@ const getEventParam = (eventParamName, eventParamType = "string", columnName = f
   }`;
 };
 
+const getTableColumnsUnnestEventParameters = (eventParams)=>{
+  return eventParams.map(eventParam => `${getEventParam(eventParam.name, eventParam.type)} `)
+}
+
+const getTableColumns= (params)=>{
+  return params.map(param => `${param.name} as ${param.columnName}`)
+}
+
 const getDateFromTableName = (tblName) =>{
   return tblName.substring(7);
 }
@@ -31,5 +39,7 @@ const getDatsetFromTableName = (tblName) =>{
 module.exports = {
   getEventParam,
   getDatsetFromTableName,
-  getDateFromTableName
+  getDateFromTableName,
+  getTableColumns,
+  getTableColumnsUnnestEventParameters,
 };
