@@ -3,6 +3,10 @@
   "assertionSchema": "dataform_assertions",
   "warehouse": "bigquery",
   "defaultDatabase": "cafe-assistant-295900",
-  "defaultLocation": "US"
+  "defaultLocation": "US",
+  "vars": {
+    "GA4_TABLE": "events_20210131",
+    "GA4_DATASET": "ga4_obfuscated_sample_ecommerce"
+  }
 }
     

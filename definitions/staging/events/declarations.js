@@ -8,7 +8,7 @@ events_config.GA4_EVENTS.forEach(eventConfig => {
 
   // Temporary tables
   publish(eventTempTbl)
-    .config({type: "table",schema: "dataform_staging"})
+    .config({type: "table",schema: "dataform_staging",tags:["ga4_obfuscated_sample_ecommerce"]})
     .preOps(
       ctx => `
         DECLARE is_event_table DEFAULT (
@@ -29,10 +29,10 @@ events_config.GA4_EVENTS.forEach(eventConfig => {
               ${helpers.getTableColumns(eventConfig.params)},
               ${helpers.getTableColumnsUnnestEventParameters(eventConfig.eventParams)},
           FROM
-              ${ctx.ref('events_*')}
+              ${ctx.ref(constants.GA4_DATABASE, dataform.projectConfig.vars.GA4_DATASET, "events_*")}
           WHERE
           event_name = '${eventName}'
-          and REGEXP_CONTAINS(_TABLE_SUFFIX, if(is_event_table is null, r'.*', '${helpers.getDateFromTableName(constants.GA4_TABLE)}'))
+          and REGEXP_CONTAINS(_TABLE_SUFFIX, if(is_event_table is null, r'.*', '${helpers.getDateFromTableName(dataform.projectConfig.vars.GA4_TABLE)}'))
           and contains_substr(_TABLE_SUFFIX, 'intraday') is not true
 
         )
@@ -49,6 +49,7 @@ events_config.GA4_EVENTS.forEach(eventConfig => {
             {
             type: "incremental",
             uniqueKey:['dt','event_id'],
+            tags:["ga4_obfuscated_sample_ecommerce"],
             schema: "dataform_staging",
             bigquery: {
               partitionBy: "dt",
@@ -69,6 +70,7 @@ events_config.GA4_EVENTS.forEach(eventConfig => {
             {
             type: "incremental",
             uniqueKey:['dt','event_id'],
+            tags:["ga4_obfuscated_sample_ecommerce"],
             schema: "dataform_staging",
             bigquery: {
               partitionBy: "dt",
@@ -85,7 +87,7 @@ events_config.GA4_EVENTS.forEach(eventConfig => {
 
   // Intraday tables
   publish(eventIntradayTbl)
-    .config({type: "table",schema: "dataform_staging"})
+    .config({type: "table",schema: "dataform_staging", tags:["ga4_obfuscated_sample_ecommerce","ga4_hourly"]})
     .query(
       ctx => `
       SELECT
@@ -103,7 +105,7 @@ events_config.GA4_EVENTS.forEach(eventConfig => {
 
   // Intraday plus daily views
   publish(eventView)
-  .config({type: "view",schema: "dataform_staging"})
+  .config({type: "view",schema: "dataform_staging",tags:["ga4_obfuscated_sample_ecommerce","ga4_hourly"]})
   .query(
     ctx => `
       select *, 'daily' as  event_type from ${ctx.ref(eventTbl)}
